@@ -1,10 +1,10 @@
 # Sandbox App Module
 
-Orchestrates building a container image, pushing it to ACR, and deploying it as an Azure App Service container app in the sandbox environment.
+Orchestrates building a container image, pushing it to ACR, and deploying it as an Azure App Service container app in the sandbox environment. With `image_tag`, it deploys an image already pushed to the ACR (e.g. by a GitHub workflow) instead of building one.
 
 ## Prerequisites
 
-- [Podman](https://podman.io/) installed and configured
+- [Podman](https://podman.io/) installed and configured (only without `image_tag`)
 - Azure subscription access with permissions to the sandbox resources
 - Terraform Azure provider configured
 - Existing sandbox infrastructure (App Service Plan, ACR, Resource Group)
@@ -42,10 +42,32 @@ module "my_app" {
 
 When `docker_context_path` is not specified, it defaults to the parent directory of the Terraform root (assumes a `deployment/` subdirectory structure).
 
+### Deploying a pushed image (from a workflow)
+
+```hcl
+variable "image_tag" {
+  type    = string
+  default = null
+}
+
+module "my_app" {
+  source = "git::https://github.com/cokeSchlumpf/core--terraform-modules.git//sandbox_app?ref=versions/1"
+
+  app_name          = "my-app"
+  image_tag         = var.image_tag # e.g. "1.2.0", pushed as <acr>/my-app:1.2.0
+  environment       = "uat"
+  health_check_path = "/health"
+  websites_port     = 8000
+}
+```
+
+`tofu apply -var image_tag=1.2.0` deploys that image without building it; without `image_tag` (a laptop), the module builds and pushes as before.
+
 ## Features
 
 - **Full deployment pipeline**: Build, push, and deploy in a single module
-- **Automatic image tagging**: Uses timestamp tags for each deployment
+- **Automatic image tagging**: Uses timestamp tags for each deployment built here
+- **Pushed images**: Deploys `<app_name>:<image_tag>` from the ACR without building
 - **Container logging**: HTTP logs enabled with 7-day retention
 - **HTTPS only**: Enforces secure connections
 - **Configurable app settings**: Merge custom settings with sensible defaults
@@ -57,13 +79,16 @@ This module composes two other modules:
 1. **container_image**: Builds the Docker image locally using Podman
 2. **sandbox_image**: Pushes the image to the sandbox ACR with multiple tags
 
-Then deploys the timestamped image to Azure App Service.
+Then deploys the timestamped image to Azure App Service. With `image_tag`, neither runs; the module deploys `<app_name>:<image_tag>` from the ACR.
 
 ## Inputs
 
 | Variable | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
 | `app_name` | string | Yes | - | App name (also used as image name) |
+| `image_tag` | string | No | `null` | Tag of an image already in the ACR as `<app_name>:<image_tag>`; when `null`, the image is built and pushed with Podman |
+| `environment` | string | No | `"sandbox"` | Stage of the app, set as `APP__ENVIRONMENT` |
+| `health_check_path` | string | No | `null` | Path App Service checks for health (e.g. `/health`); unhealthy instances are replaced after 10 minutes |
 | `docker_context_path` | string | No | `null` | Path to directory containing Dockerfile (defaults to parent of deployment/) |
 | `dockerfile_path` | string | No | `"Dockerfile"` | Dockerfile path relative to context |
 | `app_settings` | map(string) | No | `{}` | Additional app settings |
@@ -80,7 +105,7 @@ Then deploys the timestamped image to Azure App Service.
 | `app_url` | HTTPS URL of deployed app |
 | `app_name` | Name of the deployed app |
 | `acr_image` | Full ACR image reference used |
-| `timestamp_tag` | Timestamp tag of deployed image |
+| `timestamp_tag` | Timestamp tag of deployed image (`null` with `image_tag`) |
 
 ## Default App Settings
 
@@ -92,6 +117,6 @@ The following app settings are automatically configured:
 | `WEBSITES_ENABLE_APP_SERVICE_STORAGE` | `false` | Disable persistent storage |
 | `DOCKER_ENABLE_CI` | `true` | Enable container CI |
 | `WEBSITES_CONTAINER_START_TIME_LIMIT` | `600` | 10-minute startup timeout |
-| `APP__ENVIRONMENT` | `sandbox` | Environment identifier |
+| `APP__ENVIRONMENT` | `<environment>` | Environment identifier |
 | `APP__MODELS__AZURE_OPENAI__API_KEY` / `__ENDPOINT` | from Key Vault / sandbox | Azure OpenAI access |
 | `APP__OCR__AZURE__API_KEY` / `__ENDPOINT` | from Key Vault / sandbox | Document Intelligence access |

@@ -76,6 +76,7 @@ locals {
 
 # Step 1: Build the image
 module "build_image" {
+  count               = var.image_tag == null ? 1 : 0
   source              = "../container_image"
   image_name          = var.app_name
   docker_context_path = local.docker_context_path
@@ -86,10 +87,16 @@ module "build_image" {
 
 # Step 2: Push to ACR
 module "push_image" {
+  count       = var.image_tag == null ? 1 : 0
   source      = "../sandbox_image"
-  local_image = module.build_image.local_image
+  local_image = module.build_image[0].local_image
 
   depends_on = [module.build_image]
+}
+
+locals {
+  # The pushed image with its timestamp tag, or the image already in the ACR with image_tag
+  image = var.image_tag == null ? "${module.push_image[0].repository_name}:${module.push_image[0].timestamp_tag}" : "${var.app_name}:${var.image_tag}"
 }
 
 # Step 3: Deploy to App Service
@@ -102,11 +109,13 @@ resource "azurerm_linux_web_app" "app" {
   depends_on = [module.push_image]
 
   site_config {
-    always_on = true
+    always_on                         = true
+    health_check_path                 = var.health_check_path
+    health_check_eviction_time_in_min = var.health_check_path == null ? null : 10
 
     application_stack {
-      docker_image_name        = "${module.push_image.repository_name}:${module.push_image.timestamp_tag}"
-      docker_registry_url      = "https://${module.push_image.acr_login_server}"
+      docker_image_name        = local.image
+      docker_registry_url      = "https://${data.azurerm_container_registry.acr.login_server}"
       docker_registry_username = data.azurerm_container_registry.acr.admin_username
       docker_registry_password = data.azurerm_container_registry.acr.admin_password
     }
@@ -118,7 +127,7 @@ resource "azurerm_linux_web_app" "app" {
       "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
       "DOCKER_ENABLE_CI"                    = "true"
       "WEBSITES_CONTAINER_START_TIME_LIMIT" = "600"
-      "APP__ENVIRONMENT"                    = "sandbox"
+      "APP__ENVIRONMENT"                    = var.environment
       "APP__MODELS__AZURE_OPENAI__API_KEY"  = data.azurerm_key_vault_secret.azure_openai_api_key.value
       "APP__MODELS__AZURE_OPENAI__ENDPOINT" = module.sandbox_properties.azure_openai__endpoint
       "APP__OCR__AZURE__API_KEY"            = data.azurerm_key_vault_secret.di_api_key.value
