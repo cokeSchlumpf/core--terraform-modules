@@ -1,0 +1,6 @@
+# OpenTofu working files; modules don't pin providers, their callers do
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+*.tfvars
