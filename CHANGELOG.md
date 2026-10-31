@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/cokeSchlumpf/core--terraform-modules/compare/v1.0.0...v1.1.0) (2026-10-31)
+
+
+### Features
+
+* deploy a pushed image with sandbox_app ([#3](https://github.com/cokeSchlumpf/core--terraform-modules/issues/3)) ([cac5bdb](https://github.com/cokeSchlumpf/core--terraform-modules/commit/cac5bdb473c4ff5139fd67763f3df2e2a09ba8e0))
+
 ## 1.0.0 (2026-10-31)
 
 
