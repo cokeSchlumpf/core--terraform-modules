@@ -13,7 +13,7 @@ Orchestrates building a container image, pushing it to ACR, and deploying it as 
 
 ```hcl
 module "my_app" {
-  source = "../sandbox_app"
+  source = "git::https://github.com/cokeSchlumpf/core--terraform-modules.git//sandbox_app?ref=versions/1"
 
   app_name            = "my-streamlit-app"
   docker_context_path = "${path.root}/../app"
@@ -34,7 +34,7 @@ output "app_url" {
 
 ```hcl
 module "my_app" {
-  source = "../sandbox_app"
+  source = "git::https://github.com/cokeSchlumpf/core--terraform-modules.git//sandbox_app?ref=versions/1"
 
   app_name = "my-app"
 }

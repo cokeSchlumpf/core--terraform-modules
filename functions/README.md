@@ -20,7 +20,7 @@ Converts Azure location names to standardized short and long formats. Accepts bo
 
 ```hcl
 module "location" {
-  source   = "../functions/resource_location"
+  source   = "git::https://github.com/cokeSchlumpf/core--terraform-modules.git//functions/resource_location?ref=versions/1"
   location = "Switzerland North"
 }
 
@@ -74,7 +74,7 @@ Example: `wcs--dev--chn--rg--myapp` or `wcs--prd--weu--sa--data--01`
 
 ```hcl
 module "rg_name" {
-  source = "../functions/resource_name"
+  source = "git::https://github.com/cokeSchlumpf/core--terraform-modules.git//functions/resource_name?ref=versions/1"
 
   organization  = "wcs"
   environment   = "dev"
@@ -93,7 +93,7 @@ resource "azurerm_resource_group" "main" {
 
 ```hcl
 module "sa_name" {
-  source = "../functions/resource_name"
+  source = "git::https://github.com/cokeSchlumpf/core--terraform-modules.git//functions/resource_name?ref=versions/1"
 
   organization  = "wcs"
   environment   = "prd"
@@ -167,7 +167,7 @@ Provides pre-configured values for the sandbox environment infrastructure. This 
 
 ```hcl
 module "sandbox" {
-  source = "../functions/sandbox_properties"
+  source = "git::https://github.com/cokeSchlumpf/core--terraform-modules.git//functions/sandbox_properties?ref=versions/1"
 }
 
 data "azurerm_container_registry" "acr" {
