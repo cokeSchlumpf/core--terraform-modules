@@ -10,12 +10,12 @@ output "app_name" {
 
 output "acr_image" {
   description = "Full ACR image reference used"
-  value       = module.push_image.acr_image_timestamped
+  value       = "${data.azurerm_container_registry.acr.login_server}/${local.image}"
 }
 
 output "timestamp_tag" {
-  description = "Timestamp tag of deployed image"
-  value       = module.push_image.timestamp_tag
+  description = "Timestamp tag of deployed image (null when image_tag is set)"
+  value       = var.image_tag == null ? module.push_image[0].timestamp_tag : null
 }
 
 output "storage_account_name" {
