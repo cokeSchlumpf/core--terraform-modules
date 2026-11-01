@@ -69,3 +69,19 @@ variable "short_name" {
   type        = string
   default     = null
 }
+
+variable "custom_domains" {
+  description = "Host names of the app, e.g. [\"demo.sbx.casesight.io\"]; each gets a managed certificate, the first one is the public URL of the app"
+  type        = list(string)
+  default     = []
+
+  validation {
+    condition     = alltrue([for host in var.custom_domains : can(regex("^([a-z0-9]([a-z0-9-]*[a-z0-9])?\\.)+[a-z]{2,}$", host))])
+    error_message = "custom_domains must be lower-case host names, e.g. demo.sbx.casesight.io."
+  }
+
+  validation {
+    condition     = length(distinct(var.custom_domains)) == length(var.custom_domains)
+    error_message = "custom_domains must not name a host name twice."
+  }
+}

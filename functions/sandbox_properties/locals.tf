@@ -37,6 +37,11 @@ locals {
   azure_openai__endpoint           = "https://wcs--sbx--chn--oai--apps-02795.openai.azure.com/"
   azure_openai_api_key_secret_name = "azure-openai-api-key"
 
+  # DNS zones in which apps create the records of their custom domains: zone name → resource group
+  dns_zones = {
+    "sbx.casesight.io" = "wcs--sbx--chn--rg--dns"
+  }
+
   # Properties of Terraform States Storage Container
   tfstate = {
     storage_account_id = "/subscriptions/b5612821-2876-496e-b7bb-7c9782950d53/resourceGroups/wcs--sbx--chn--rg--apps/providers/Microsoft.Storage/storageAccounts/wcssbxchnsatfstate"

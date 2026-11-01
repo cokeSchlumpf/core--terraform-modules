@@ -128,6 +128,7 @@ resource "azurerm_linux_web_app" "app" {
       "DOCKER_ENABLE_CI"                    = "true"
       "WEBSITES_CONTAINER_START_TIME_LIMIT" = "600"
       "APP__ENVIRONMENT"                    = var.environment
+      "APP__PUBLIC_URL"                     = local.public_url
       "APP__MODELS__AZURE_OPENAI__API_KEY"  = data.azurerm_key_vault_secret.azure_openai_api_key.value
       "APP__MODELS__AZURE_OPENAI__ENDPOINT" = module.sandbox_properties.azure_openai__endpoint
       "APP__OCR__AZURE__API_KEY"            = data.azurerm_key_vault_secret.di_api_key.value

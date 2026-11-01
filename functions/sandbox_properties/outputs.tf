@@ -92,3 +92,8 @@ output "azure_openai_api_key_secret_name" {
   description = "The name of the Key Vault secret containing the Azure OpenAI API key"
   value       = local.azure_openai_api_key_secret_name
 }
+
+output "dns_zones" {
+  description = "DNS zones in which apps create the records of their custom domains: zone name → resource group"
+  value       = local.dns_zones
+}
