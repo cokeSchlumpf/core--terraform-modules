@@ -63,6 +63,24 @@ module "my_app" {
 
 `tofu apply -var image_tag=1.2.0` deploys that image without building it; without `image_tag` (a laptop), the module builds and pushes as before.
 
+### Custom domains
+
+```hcl
+module "my_app" {
+  source = "git::https://github.com/cokeSchlumpf/core--terraform-modules.git//sandbox_app?ref=versions/1"
+
+  app_name       = "my-app"
+  custom_domains = ["my-app.sbx.casesight.io"]
+}
+```
+
+Each host name gets a hostname binding and an App Service Managed Certificate, bound with SNI; Azure renews the certificate by itself as long as the DNS records stay in place and the app is publicly reachable. Only subdomains: a host name that is a zone itself is rejected at plan.
+
+- **Below a zone of the sandbox** (`dns_zones` of `sandbox_properties`, e.g. `sbx.casesight.io`): the module creates `CNAME <host> → <default host name>` and `TXT asuid.<host> = <custom_domain_verification_id>` in that zone (the deepest matching zone wins).
+- **Any other host name** (e.g. a subdomain of a domain that stays at Strato): set both records at the registrar first, as listed by the output `dns_records`; until they resolve, the apply fails at the hostname binding.
+
+The first host name is the public URL of the app (`APP__PUBLIC_URL`); `app_url` stays the `azurewebsites.net` URL. The skill `configure-custom-domain` of `core-agent-skills` walks through it.
+
 ## Features
 
 - **Full deployment pipeline**: Build, push, and deploy in a single module
@@ -70,6 +88,7 @@ module "my_app" {
 - **Pushed images**: Deploys `<app_name>:<image_tag>` from the ACR without building
 - **Container logging**: HTTP logs enabled with 7-day retention
 - **HTTPS only**: Enforces secure connections
+- **Custom domains**: DNS records, hostname bindings and managed certificates, renewed by Azure
 - **Configurable app settings**: Merge custom settings with sensible defaults
 
 ## Architecture
@@ -97,6 +116,7 @@ Then deploys the timestamped image to Azure App Service. With `image_tag`, neith
 | `database` | bool | No | `false` | Create a serverless SQL database and inject `APP__DATABASE__MSSQL__*` settings |
 | `storage` | bool | No | `false` | Create a storage account and inject `APP__STORAGE__AZURE__*` settings |
 | `short_name` | string | No | `null` | Storage account name override when `app_name` is too long |
+| `custom_domains` | list(string) | No | `[]` | Host names of the app, each with a managed certificate; the first one is its public URL |
 
 ## Outputs
 
@@ -106,6 +126,8 @@ Then deploys the timestamped image to Azure App Service. With `image_tag`, neith
 | `app_name` | Name of the deployed app |
 | `acr_image` | Full ACR image reference used |
 | `timestamp_tag` | Timestamp tag of deployed image (`null` with `image_tag`) |
+| `custom_domains` | Host names of the app |
+| `dns_records` | DNS records of the custom domains (`host`, `type`, `name`, `value`, `zone`, `managed`; `managed = false`: set by hand at the registrar) |
 
 ## Default App Settings
 
@@ -118,5 +140,6 @@ The following app settings are automatically configured:
 | `DOCKER_ENABLE_CI` | `true` | Enable container CI |
 | `WEBSITES_CONTAINER_START_TIME_LIMIT` | `600` | 10-minute startup timeout |
 | `APP__ENVIRONMENT` | `<environment>` | Environment identifier |
+| `APP__PUBLIC_URL` | `https://<first custom domain>` or `https://<app_name>.azurewebsites.net` | Public URL of the app (`commons` `AppSettings.public_url`) |
 | `APP__MODELS__AZURE_OPENAI__API_KEY` / `__ENDPOINT` | from Key Vault / sandbox | Azure OpenAI access |
 | `APP__OCR__AZURE__API_KEY` / `__ENDPOINT` | from Key Vault / sandbox | Document Intelligence access |
