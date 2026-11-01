@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/cokeSchlumpf/core--terraform-modules/compare/v1.2.0...v1.3.0) (2026-11-01)
+
+
+### Features
+
+* Add custom domains with managed certificates to sandbox_app (T-007) ([#7](https://github.com/cokeSchlumpf/core--terraform-modules/issues/7)) ([f9bcdd5](https://github.com/cokeSchlumpf/core--terraform-modules/commit/f9bcdd5fec62d1a8670352d6defa5fbd5494a822))
+
 ## [1.2.0](https://github.com/cokeSchlumpf/core--terraform-modules/compare/v1.1.0...v1.2.0) (2026-11-01)
 
 
