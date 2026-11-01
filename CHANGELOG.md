@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/cokeSchlumpf/core--terraform-modules/compare/v1.1.0...v1.2.0) (2026-11-01)
+
+
+### Features
+
+* Add module dns_zone (T-007) ([#5](https://github.com/cokeSchlumpf/core--terraform-modules/issues/5)) ([6ac8fe4](https://github.com/cokeSchlumpf/core--terraform-modules/commit/6ac8fe4af2514ccf8f495f45ae0f676ed9e2f049))
+
 ## [1.1.0](https://github.com/cokeSchlumpf/core--terraform-modules/compare/v1.0.0...v1.1.0) (2026-10-31)
 
 
