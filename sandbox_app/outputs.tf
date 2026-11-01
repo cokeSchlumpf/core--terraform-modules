@@ -49,7 +49,7 @@ output "dns_records" {
         host    = host
         type    = "TXT"
         name    = "asuid.${host}"
-        value   = azurerm_linux_web_app.app.custom_domain_verification_id
+        value   = local.custom_domain_verification_id
         zone    = zone == null ? null : zone.zone
         managed = zone != null
       },

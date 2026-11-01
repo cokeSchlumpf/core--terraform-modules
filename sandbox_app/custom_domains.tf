@@ -24,6 +24,9 @@ locals {
     for host, zone in local.custom_domains : host => merge(zone, { name = trimsuffix(host, ".${zone.zone}") }) if zone != null
   }
 
+  # Azure marks it sensitive, but it is published in the asuid TXT records anyway
+  custom_domain_verification_id = nonsensitive(azurerm_linux_web_app.app.custom_domain_verification_id)
+
   public_url = length(var.custom_domains) > 0 ? "https://${var.custom_domains[0]}" : "https://${var.app_name}.azurewebsites.net"
 }
 
@@ -47,7 +50,7 @@ resource "azurerm_dns_txt_record" "custom_domains" {
   ttl                 = 3600
 
   record {
-    value = azurerm_linux_web_app.app.custom_domain_verification_id
+    value = local.custom_domain_verification_id
   }
 }
 
