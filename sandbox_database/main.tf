@@ -2,6 +2,11 @@ module "sandbox_properties" {
   source = "../functions/sandbox_properties"
 }
 
+locals {
+  # Protected in the stages that hold data worth keeping, unless the caller says otherwise.
+  prevent_destroy = var.prevent_destroy != null ? var.prevent_destroy : contains(["uat", "prd"], lower(var.environment))
+}
+
 module "database_name" {
   source        = "../functions/resource_name"
   name          = var.database_name
@@ -19,8 +24,10 @@ resource "azurerm_mssql_database" "main" {
   name      = module.database_name.name
   server_id = data.azurerm_mssql_server.sandbox.id
 
-  sku_name                    = "GP_S_Gen5_1"
-  auto_pause_delay_in_minutes = var.auto_pause_delay_in_minutes
-  min_capacity                = var.min_capacity
-  max_size_gb                 = var.max_size_gb
+  sku_name    = var.sku_name
+  max_size_gb = var.max_size_gb
+
+  lifecycle {
+    prevent_destroy = local.prevent_destroy
+  }
 }

@@ -113,7 +113,9 @@ Then deploys the timestamped image to Azure App Service. With `image_tag`, neith
 | `app_settings` | map(string) | No | `{}` | Additional app settings |
 | `websites_port` | number | No | `8501` | Container port to expose |
 | `git_token` | string | No | `""` | Git token for private repository access during build (sensitive) |
-| `database` | bool | No | `false` | Create a serverless SQL database and inject `APP__DATABASE__MSSQL__*` settings |
+| `database` | bool | No | `false` | Create a SQL database and inject `APP__DATABASE__MSSQL__*` settings; the app sets `APP__DATABASE__MODE = "mssql"` itself |
+| `database_sku_name` | string | No | `"S0"` | Fixed tier of the database; serverless tiers are refused |
+| `database_prevent_destroy` | bool | No | `null` | Refuse to destroy the database; by default only if `environment` is `uat` or `prd` |
 | `storage` | bool | No | `false` | Create a storage account and inject `APP__STORAGE__AZURE__*` settings |
 | `short_name` | string | No | `null` | Storage account name override when `app_name` is too long |
 | `custom_domains` | list(string) | No | `[]` | Host names of the app, each with a managed certificate; the first one is its public URL |

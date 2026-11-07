@@ -58,6 +58,18 @@ variable "database" {
   default     = false
 }
 
+variable "database_sku_name" {
+  description = "Fixed tier of the database, if database is true; no serverless tiers"
+  type        = string
+  default     = "S0"
+}
+
+variable "database_prevent_destroy" {
+  description = "Refuse to destroy the database, if database is true; by default only if environment is uat or prd"
+  type        = bool
+  default     = null
+}
+
 variable "storage" {
   description = "Create a storage account for this app and inject connection environment variables"
   type        = bool
