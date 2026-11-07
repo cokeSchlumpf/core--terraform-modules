@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/cokeSchlumpf/core--terraform-modules/compare/v1.3.0...v1.4.0) (2026-11-07)
+
+
+### Features
+
+* SQL databases in a fixed tier, protected in uat and prd ([deb1fc5](https://github.com/cokeSchlumpf/core--terraform-modules/commit/deb1fc5bedef68c971594ead8518158568d313df))
+
 ## [1.3.0](https://github.com/cokeSchlumpf/core--terraform-modules/compare/v1.2.0...v1.3.0) (2026-11-01)
 
 
