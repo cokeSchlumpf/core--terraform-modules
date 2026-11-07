@@ -7,7 +7,7 @@ OpenTofu modules of the Azure sandbox of `cokeSchlumpf`: naming and location hel
 | `functions/` | Naming, location and sandbox property helpers, no resources (see [functions/README.md](functions/README.md)) |
 | `container_image/` | Builds a container image locally with Podman |
 | `sandbox_image/` | Pushes a local image to the sandbox registry |
-| `sandbox_database/` | Serverless SQL database on the sandbox SQL server |
+| `sandbox_database/` | SQL database in a fixed tier on the sandbox SQL server |
 | `sandbox_storage/` | Per-app storage account |
 | `dns_zone/` | Azure DNS zone with its records and the delegations of child zones (see [dns_zone/README.md](dns_zone/README.md)) |
 | `sandbox_app/` | End-to-end app deployment: build, push, App Service (see [sandbox_app/README.md](sandbox_app/README.md)) |

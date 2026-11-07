@@ -41,9 +41,12 @@ data "azurerm_key_vault_secret" "di_api_key" {
 
 # Conditional: Create database for this app
 module "database" {
-  count         = var.database ? 1 : 0
-  source        = "../sandbox_database"
-  database_name = var.app_name
+  count           = var.database ? 1 : 0
+  source          = "../sandbox_database"
+  database_name   = var.app_name
+  environment     = var.environment
+  sku_name        = var.database_sku_name
+  prevent_destroy = var.database_prevent_destroy
 }
 
 # Conditional: Create storage account for this app
